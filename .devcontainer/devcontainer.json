@@ -8,12 +8,14 @@
       }
     }
   },
-  "forwardPorts": [3000],
+  "forwardPorts": [
+    3000
+  ],
   "portsAttributes": {
     "3000": {
       "label": "Next.js Dev Server",
       "onAutoForward": "openBrowser"
     }
   },
-  "postStartCommand": "npm install && nohup npm run dev >/tmp/task-planner-dev.log 2>&1 &"
+  "postStartCommand": "npm install && (lsof -ti:3000 | xargs -r kill) && nohup npm run dev >/tmp/task-planner-dev.log 2>&1 &"
 }
