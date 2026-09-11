@@ -23,15 +23,15 @@ npm install && npm run dev
 node -v
 npm -v
 npm install
-npm run typecheck
 npm run dev
+npm run typecheck
 ```
 
-Ожидаемый успешный вывод:
+Ожидаемый успешный результат:
 
 - `node -v` → `v20.x.x`
+- `npm run dev` → сервер слушает порт `3000`
 - `npm run typecheck` → без ошибок
-- `npm run dev` → строка `ready - started server on 0.0.0.0:3000`
 
 Если порт не открылся:
 1. VS Code → **Ports**

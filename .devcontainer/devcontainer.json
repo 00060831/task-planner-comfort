@@ -15,5 +15,5 @@
       "onAutoForward": "openBrowser"
     }
   },
-  "postStartCommand": "npm install && npm run dev"
+  "postStartCommand": "npm install && nohup npm run dev >/tmp/task-planner-dev.log 2>&1 &"
 }
