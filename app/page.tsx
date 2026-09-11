@@ -21,12 +21,16 @@ const laneLabels: Record<Lane, string> = {
   someday: "Когда-нибудь",
 };
 
-const seedTasks: Task[] = [
-  { id: "seed-1", title: "Собрать мысли в Brain Dump", lane: "today", done: false },
-  { id: "seed-2", title: "Выбрать одну задачу для глубокого фокуса", lane: "today", done: false },
-  { id: "seed-3", title: "Подготовить список идей на завтра", lane: "tomorrow", done: false },
-  { id: "seed-4", title: "Запланировать ленивый творческий спринт", lane: "someday", done: false },
+const seedTaskTemplates: Omit<Task, "id">[] = [
+  { title: "Собрать мысли в Brain Dump", lane: "today", done: false },
+  { title: "Выбрать одну задачу для глубокого фокуса", lane: "today", done: false },
+  { title: "Подготовить список идей на завтра", lane: "tomorrow", done: false },
+  { title: "Запланировать ленивый творческий спринт", lane: "someday", done: false },
 ];
+
+function buildSeedTasks(): Task[] {
+  return seedTaskTemplates.map((task) => ({ ...task, id: crypto.randomUUID() }));
+}
 
 function isTask(value: unknown): value is Task {
   if (!value || typeof value !== "object") {
@@ -71,21 +75,21 @@ export default function Home() {
   const [lane, setLane] = useState<Lane>("today");
   const [tasks, setTasks] = useState<Task[]>(() => {
     if (typeof window === "undefined") {
-      return seedTasks;
+      return [];
     }
 
     const saved = window.localStorage.getItem(STORAGE_KEY);
 
     if (!saved) {
-      return seedTasks;
+      return buildSeedTasks();
     }
 
     try {
       const parsed = JSON.parse(saved) as unknown;
-      return Array.isArray(parsed) && parsed.every(isTask) ? parsed : seedTasks;
+      return Array.isArray(parsed) && parsed.every(isTask) ? parsed : buildSeedTasks();
     } catch {
       window.localStorage.removeItem(STORAGE_KEY);
-      return seedTasks;
+      return buildSeedTasks();
     }
   });
   const hydrated = useSyncExternalStore(
@@ -160,7 +164,7 @@ export default function Home() {
   }
 
   function resetDemo() {
-    setTasks(seedTasks);
+    setTasks(buildSeedTasks());
     setDraft("");
     setLane("today");
   }
@@ -240,8 +244,12 @@ export default function Home() {
           </div>
           <p className="mt-3 text-sm text-slate-400">
             Поддерживаются префиксы <span className="font-mono text-slate-200">сегодня:</span>,{" "}
-            <span className="font-mono text-slate-200">завтра:</span> и{" "}
-            <span className="font-mono text-slate-200">потом:</span>.
+            <span className="font-mono text-slate-200">today:</span>,{" "}
+            <span className="font-mono text-slate-200">завтра:</span>,{" "}
+            <span className="font-mono text-slate-200">tomorrow:</span>,{" "}
+            <span className="font-mono text-slate-200">потом:</span>,{" "}
+            <span className="font-mono text-slate-200">когда-нибудь:</span> и{" "}
+            <span className="font-mono text-slate-200">someday:</span>.
           </p>
         </div>
 
