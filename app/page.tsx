@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 type Lane = "today" | "tomorrow" | "someday";
 
 type Task = {
-  id: number;
+  id: string;
   title: string;
   lane: Lane;
   done: boolean;
@@ -22,10 +22,10 @@ const laneLabels: Record<Lane, string> = {
 };
 
 const seedTasks: Task[] = [
-  { id: 1, title: "Собрать мысли в Brain Dump", lane: "today", done: false },
-  { id: 2, title: "Выбрать одну задачу для глубокого фокуса", lane: "today", done: false },
-  { id: 3, title: "Подготовить список идей на завтра", lane: "tomorrow", done: false },
-  { id: 4, title: "Запланировать ленивый творческий спринт", lane: "someday", done: false },
+  { id: "seed-1", title: "Собрать мысли в Brain Dump", lane: "today", done: false },
+  { id: "seed-2", title: "Выбрать одну задачу для глубокого фокуса", lane: "today", done: false },
+  { id: "seed-3", title: "Подготовить список идей на завтра", lane: "tomorrow", done: false },
+  { id: "seed-4", title: "Запланировать ленивый творческий спринт", lane: "someday", done: false },
 ];
 
 function parseLane(value: string, fallback: Lane): { title: string; lane: Lane } {
@@ -87,13 +87,29 @@ export default function Home() {
   }, [hydrated, tasks]);
 
   const counts = useMemo(
-    () =>
-      laneOrder.reduce(
-        (acc, item) => ({ ...acc, [item]: tasks.filter((task) => task.lane === item && !task.done).length }),
-        { today: 0, tomorrow: 0, someday: 0 } as Record<Lane, number>,
-      ),
+    () => {
+      const summary: Record<Lane, number> = { today: 0, tomorrow: 0, someday: 0 };
+
+      for (const task of tasks) {
+        if (!task.done) {
+          summary[task.lane] += 1;
+        }
+      }
+
+      return summary;
+    },
     [tasks],
   );
+
+  const tasksByLane = useMemo(() => {
+    const grouped: Record<Lane, Task[]> = { today: [], tomorrow: [], someday: [] };
+
+    for (const task of tasks) {
+      grouped[task.lane].push(task);
+    }
+
+    return grouped;
+  }, [tasks]);
 
   const focusTask = useMemo(
     () => tasks.find((task) => !task.done && task.lane === "today") ?? tasks.find((task) => !task.done),
@@ -108,20 +124,20 @@ export default function Home() {
     }
 
     setTasks((current) => [
-      { id: Date.now(), title: parsed.title, lane: parsed.lane, done: false },
+      { id: crypto.randomUUID(), title: parsed.title, lane: parsed.lane, done: false },
       ...current,
     ]);
     setDraft("");
     setLane(parsed.lane);
   }
 
-  function toggleTask(id: number) {
+  function toggleTask(id: string) {
     setTasks((current) =>
       current.map((task) => (task.id === id ? { ...task, done: !task.done } : task)),
     );
   }
 
-  function moveTask(id: number) {
+  function moveTask(id: string) {
     setTasks((current) =>
       current.map((task) => (task.id === id ? { ...task, lane: nextLane(task.lane) } : task)),
     );
@@ -272,10 +288,8 @@ export default function Home() {
               </span>
             </div>
             <div className="mt-4 space-y-3">
-              {tasks.filter((task) => task.lane === item).length ? (
-                tasks
-                  .filter((task) => task.lane === item)
-                  .map((task) => (
+              {tasksByLane[item].length ? (
+                tasksByLane[item].map((task) => (
                     <article
                       key={task.id}
                       className={`rounded-3xl border p-4 transition ${
