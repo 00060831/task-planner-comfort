@@ -1,0 +1,28 @@
+{
+  "name": "task-planner-comfort",
+  "image": "mcr.microsoft.com/devcontainers/base:bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20.19.0",
+      "nodeGypDependencies": true
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  },
+  "forwardPorts": [
+    3000
+  ],
+  "portsAttributes": {
+    "3000": {
+      "label": "Next.js Dev Server",
+      "onAutoForward": "openBrowser"
+    }
+  },
+  "postCreateCommand": "npm ci",
+  "postStartCommand": "if [ -f /tmp/task-planner-dev.pid ]; then PID=$(cat /tmp/task-planner-dev.pid); if [ -d /proc/$PID ] && [ \"$(readlink /proc/$PID/cwd 2>/dev/null)\" = \"$PWD\" ] && ps -p $PID -o stat= | grep -qv 'Z' && tr '\\0' ' ' < /proc/$PID/cmdline | grep -q 'next dev -H 0.0.0.0 -p 3000'; then echo dev-server-already-running; exit 0; else rm -f /tmp/task-planner-dev.pid; fi; fi; nohup npm run dev >/tmp/task-planner-dev.log 2>&1 & NEW_PID=$!; sleep 2; if [ -d /proc/$NEW_PID ] && ps -p $NEW_PID -o stat= | grep -qv 'Z'; then echo $NEW_PID >/tmp/task-planner-dev.pid; else echo dev-server-start-failed; fi"
+}

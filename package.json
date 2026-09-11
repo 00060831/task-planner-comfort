@@ -1,0 +1,22 @@
+{
+  "name": "task-planner-comfort",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -H 0.0.0.0 -p 3000",
+    "build": "next build",
+    "start": "next start -H 0.0.0.0 -p 3000",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "16.3.4",
+    "react": "19.1.1",
+    "react-dom": "19.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "20.19.14",
+    "@types/react": "19.1.13",
+    "@types/react-dom": "19.1.9",
+    "typescript": "5.6.3"
+  }
+}
