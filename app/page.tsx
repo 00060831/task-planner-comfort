@@ -17,7 +17,7 @@ export default function HomePage() {
       <p>
         Если React/Node не запускается, откройте
         {" "}
-        <a href="/fallback.html">fallback.html</a>.
+        <a href="/fallback.html">резервную статическую страницу</a>.
       </p>
     </main>
   );

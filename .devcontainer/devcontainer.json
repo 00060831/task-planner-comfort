@@ -1,6 +1,12 @@
 {
   "name": "task-planner-comfort",
-  "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
+  "image": "mcr.microsoft.com/devcontainers/base:bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20.19.0",
+      "nodeGypDependencies": true
+    }
+  },
   "customizations": {
     "vscode": {
       "settings": {
@@ -8,9 +14,7 @@
       }
     }
   },
-  "forwardPorts": [
-    3000
-  ],
+  "forwardPorts": [3000],
   "portsAttributes": {
     "3000": {
       "label": "Next.js Dev Server",
