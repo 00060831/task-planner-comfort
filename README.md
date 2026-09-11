@@ -1,17 +1,35 @@
 # Task Planner Comfort
 
-Repository for planning and validating the MVP UX of a comfort-first task planner for creative users.
+A comfort-first MVP of Task Planner for lazy creative researchers who want to capture ideas instantly and stay focused without bureaucracy.
 
-MVP phase has moved to **UX validation for a "Lazy Creative Researcher"**: a user who wants speed, beauty, and zero friction.
+Repository for building and validating the MVP UX of a comfort-first task planner for creative users who want speed, beauty, and zero friction.
 
-## 🧪 Test Goal
+## What is inside
+
+- one-click task capture with smart parsing
+- three lightweight views: Today / Tomorrow / Someday
+- zero-config focus mode
+- brain dump with autosave
+- archive + search
+- mobile-first dark UI
+
+## Run locally
+
+```bash
+npm install
+npm run dev
+```
+
+Then open `http://localhost:3000`.
+
+## 🧪 UX Test Goal
 
 Validate that the product is understandable and usable **without reading instructions**, especially on mobile.
 
 ## ✅ UX Test Scenarios (MVP)
 
 1. **Quick idea capture**
-   - Action: `Cmd/Ctrl + K` → type `Прочитать статью про OAuth` → `Enter`
+   - Action: `Cmd/Ctrl + K` → type `Прочитать статью про OAuth` → save
    - Pass: task appears in **Today** or default **Someday** in < 5s total
 
 2. **Smart priority parsing**
@@ -35,11 +53,11 @@ Validate that the product is understandable and usable **without reading instruc
    - Pass:
      - `Готово` completes and moves to next task
      - `Отложить на 1 час` hides/defers task
-     - `Это не срочно` moves task to Someday
+     - `Перенести в Someday` moves task to Someday
 
 5. **Context switching**
    - Switch from Project A to Project B and back
-   - Pass: task list filters by current project context and restores quickly
+   - Pass: task list surfaces the current project context and restores quickly
 
 6. **Mobile swipes**
    - On mobile:
@@ -68,7 +86,7 @@ Validate that the product is understandable and usable **without reading instruc
 
 ## 🎨 UX Checklist
 
-- [ ] One-click add works (`Cmd/Ctrl + K`, `Enter`)
+- [ ] One-click add works (`Cmd/Ctrl + K`)
 - [ ] Interface is not cluttered (clear whitespace)
 - [ ] Priority colors are intuitive (🔴 🟠 🟢 🔵)
 - [ ] Animations are helpful and non-distracting

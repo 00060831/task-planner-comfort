@@ -1,0 +1,7 @@
+node_modules
+apps/web/node_modules
+apps/web/.next
+apps/web/out
+apps/web/coverage
+apps/web/AGENTS.md
+apps/web/CLAUDE.md

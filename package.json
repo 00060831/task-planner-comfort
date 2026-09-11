@@ -1,0 +1,14 @@
+{
+  "name": "task-planner-comfort",
+  "private": true,
+  "version": "1.0.0",
+  "description": "A minimal, beautiful task planner designed for lazy creative researchers who value comfort and speed over structure",
+  "workspaces": [
+    "apps/web"
+  ],
+  "scripts": {
+    "dev": "npm --workspace apps/web run dev",
+    "build": "npm --workspace apps/web run build",
+    "lint": "npm --workspace apps/web run lint"
+  }
+}
