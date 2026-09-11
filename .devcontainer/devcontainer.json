@@ -8,14 +8,12 @@
       }
     }
   },
-  "forwardPorts": [
-    3000
-  ],
+  "forwardPorts": [3000],
   "portsAttributes": {
     "3000": {
       "label": "Next.js Dev Server",
       "onAutoForward": "openBrowser"
     }
   },
-  "postStartCommand": "npm install && (lsof -ti:3000 | xargs -r kill) && nohup npm run dev >/tmp/task-planner-dev.log 2>&1 &"
+  "postStartCommand": "npm install && if [ -f /tmp/task-planner-dev.pid ] && kill -0 $(cat /tmp/task-planner-dev.pid) 2>/dev/null; then echo dev-server-already-running; else nohup npm run dev >/tmp/task-planner-dev.log 2>&1 & echo $! >/tmp/task-planner-dev.pid; fi"
 }
