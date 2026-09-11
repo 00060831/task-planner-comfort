@@ -28,6 +28,21 @@ const seedTasks: Task[] = [
   { id: "seed-4", title: "Запланировать ленивый творческий спринт", lane: "someday", done: false },
 ];
 
+function isTask(value: unknown): value is Task {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const task = value as Partial<Task>;
+
+  return (
+    typeof task.id === "string" &&
+    typeof task.title === "string" &&
+    (task.lane === "today" || task.lane === "tomorrow" || task.lane === "someday") &&
+    typeof task.done === "boolean"
+  );
+}
+
 function parseLane(value: string, fallback: Lane): { title: string; lane: Lane } {
   const normalized = value.trim();
 
@@ -66,7 +81,8 @@ export default function Home() {
     }
 
     try {
-      return JSON.parse(saved) as Task[];
+      const parsed = JSON.parse(saved) as unknown;
+      return Array.isArray(parsed) && parsed.every(isTask) ? parsed : seedTasks;
     } catch {
       window.localStorage.removeItem(STORAGE_KEY);
       return seedTasks;
@@ -301,12 +317,18 @@ export default function Home() {
                       <div className="flex gap-3">
                         <button
                           aria-label={task.done ? "Вернуть задачу" : "Завершить задачу"}
+                          aria-pressed={task.done}
                           className={`mt-1 h-5 w-5 rounded-full border ${
                             task.done ? "border-emerald-300 bg-emerald-300" : "border-slate-500"
                           }`}
                           onClick={() => toggleTask(task.id)}
                           type="button"
-                        />
+                        >
+                          <span className="sr-only">{task.done ? "Готово" : "Не готово"}</span>
+                          <span aria-hidden="true" className="flex h-full w-full items-center justify-center text-[10px] text-slate-950">
+                            {task.done ? "✓" : ""}
+                          </span>
+                        </button>
                         <div className="min-w-0 flex-1">
                           <p className={task.done ? "line-through" : ""}>{task.title}</p>
                           <div className="mt-3 flex flex-wrap gap-2">
