@@ -65,7 +65,8 @@ export function dayOffset(offset: number) {
 function nextWeekdayDate(weekday: number) {
   const today = startOfDay(new Date());
   const current = today.getDay();
-  const distance = (weekday - current + 7) % 7;
+  const rawDistance = (weekday - current + 7) % 7;
+  const distance = rawDistance === 0 ? 7 : rawDistance;
   today.setDate(today.getDate() + distance);
   return formatLocalDay(today);
 }

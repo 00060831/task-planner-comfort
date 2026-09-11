@@ -64,11 +64,14 @@ export function TaskCard({
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       className="rounded-[28px] border border-white/10 bg-[var(--card)] p-4 shadow-lg shadow-slate-950/25 backdrop-blur"
-      onTouchStart={(event) => {
-        startX.current = event.changedTouches[0]?.clientX ?? null;
+      onPointerDown={(event) => {
+        startX.current = event.clientX;
       }}
-      onTouchEnd={(event) => {
-        handleSwipeEnd(event.changedTouches[0]?.clientX ?? 0);
+      onPointerUp={(event) => {
+        handleSwipeEnd(event.clientX);
+      }}
+      onPointerCancel={() => {
+        startX.current = null;
       }}
     >
       <div className="flex items-start justify-between gap-4">
