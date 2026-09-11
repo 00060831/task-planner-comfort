@@ -76,4 +76,4 @@ npm run dev
 - `next.config.js` валиден
 - TypeScript конфиг включен (`tsconfig.json`, `next-env.d.ts`)
 - hardcoded абсолютных путей нет
-- `.devcontainer/devcontainer.json` автоматически ставит зависимости и запускает dev server
+- `.devcontainer/devcontainer.json` содержит `postCreateCommand` и `postStartCommand` для автоустановки и автозапуска (проверьте файл при дебаге)

@@ -8,7 +8,9 @@
       }
     }
   },
-  "forwardPorts": [3000],
+  "forwardPorts": [
+    3000
+  ],
   "portsAttributes": {
     "3000": {
       "label": "Next.js Dev Server",
@@ -16,5 +18,5 @@
     }
   },
   "postCreateCommand": "npm ci",
-  "postStartCommand": "if [ -f /tmp/task-planner-dev.pid ]; then PID=$(cat /tmp/task-planner-dev.pid); if [ -d /proc/$PID ] && [ \"$(readlink /proc/$PID/cwd 2>/dev/null)\" = \"$PWD\" ] && tr '\\0' ' ' < /proc/$PID/cmdline | grep -q 'next dev -H 0.0.0.0 -p 3000'; then echo dev-server-already-running; else rm -f /tmp/task-planner-dev.pid; fi; fi; if [ ! -f /tmp/task-planner-dev.pid ]; then nohup npm run dev >/tmp/task-planner-dev.log 2>&1 & echo $! >/tmp/task-planner-dev.pid; fi"
+  "postStartCommand": "if [ -f /tmp/task-planner-dev.pid ]; then PID=$(cat /tmp/task-planner-dev.pid); if [ -d /proc/$PID ] && [ \"$(readlink /proc/$PID/cwd 2>/dev/null)\" = \"$PWD\" ] && ps -p $PID -o stat= | grep -qv 'Z' && tr '\\0' ' ' < /proc/$PID/cmdline | grep -q 'next dev -H 0.0.0.0 -p 3000'; then echo dev-server-already-running; else rm -f /tmp/task-planner-dev.pid; fi; fi; if [ ! -f /tmp/task-planner-dev.pid ]; then nohup npm run dev >/tmp/task-planner-dev.log 2>&1 & echo $! >/tmp/task-planner-dev.pid; fi"
 }
