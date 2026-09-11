@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 
 type Lane = "today" | "tomorrow" | "someday";
 
@@ -72,11 +72,11 @@ export default function Home() {
       return seedTasks;
     }
   });
-  const [hydrated, setHydrated] = useState(false);
-
-  useEffect(() => {
-    setHydrated(true);
-  }, []);
+  const hydrated = useSyncExternalStore(
+    () => () => undefined,
+    () => true,
+    () => false,
+  );
 
   useEffect(() => {
     if (!hydrated) {
