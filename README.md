@@ -99,6 +99,12 @@ For each failed or painful step, capture:
 - Severity (P0/P1/P2)
 - Proposed fix
 
+Decision rule for prioritization (assigned by product + design + engineering triad):
+
+- **P0**: blocks core flow (cannot add/find/complete task) or breaks Scenario 1/4/6 on mobile
+- **P1**: flow works but has clear friction, confusion, or noticeable lag
+- **P2**: polish issues that do not block task completion
+
 Then execute in this order:
 
 1. remove friction in primary flows
