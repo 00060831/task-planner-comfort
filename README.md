@@ -72,6 +72,7 @@ npm run dev
 
 ## Проверка конфигурации
 
+- Node.js 20.9+ (в devcontainer уже используется Node 20)
 - `next.config.js` валиден
 - TypeScript конфиг включен (`tsconfig.json`, `next-env.d.ts`)
 - hardcoded абсолютных путей нет
