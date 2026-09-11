@@ -1,2 +1,78 @@
-# task-planner-comfort
-A minimal, beautiful task planner designed for lazy creative researchers who value comfort and speed over structure
+# Task Planner for Lazy Creative Researchers 🚀
+
+Минималистичный планер задач для тех, кто ценит комфорт и скорость.
+
+## Быстрый старт
+
+### Установка
+
+```bash
+git clone https://github.com/00060831/task-planner-comfort
+cd task-planner-comfort
+npm install
+npm run dev
+```
+
+Откройте http://localhost:3000
+
+## Как использовать
+
+**Добавить задачу:**
+- Нажмите Cmd+K (Mac) или Ctrl+K (Windows)
+- Напечатайте название + нажмите Enter
+- Можно и через плавающую кнопку `+ Add Task`
+
+**Smart parsing:**
+- `🔴 Срочно @сегодня #work` → автоматически проставятся высокий приоритет, Today и тег
+- `Презентация в пятницу #team` → создастся задача на ближайшую пятницу
+
+**Three Views:**
+- **Today**: что нужно сделать сегодня
+- **Tomorrow**: задачи на завтра
+- **Someday**: идеи и задачи без жесткого дедлайна
+
+**Редактирование Task Card:**
+- Кликните по карточке
+- Измените приоритет, view, дату и теги
+
+**Focus Mode:**
+- Нажмите кнопку `Focus`
+- Видите одну задачу
+- `Готово` → задача закрывается
+- `Отложить` → скрывается на 1 час
+- `Не срочно` → переносится в Someday с низким приоритетом
+
+**Brain Dump:**
+- Быстро кидайте идеи в блок Brain Dump
+- Идеи сохраняются в localStorage
+
+**Темная тема и экспорт:**
+- Переключайте `🌙 Dark / ☀️ Light`
+- Нажмите `Export JSON`, чтобы скачать локальные данные
+
+## Тестирование
+
+1. Добавьте несколько задач (Cmd+K)
+2. Переключайтесь между Today/Tomorrow/Someday
+3. Откройте Focus Mode и нажмите все 3 кнопки действий
+4. Добавьте 3-5 идей в Brain Dump
+5. Обновите страницу — задачи и идеи должны сохраниться
+6. Запустите проверки:
+
+```bash
+npm run lint
+npm run build
+```
+
+## Seed data
+
+При первом открытии автоматически добавляются тестовые задачи и идеи, чтобы можно было сразу проверить UI и поведение.
+
+## Tech Stack
+
+- Next.js 14
+- React 18
+- TypeScript
+- Tailwind CSS
+- Framer Motion (анимации)
+- localStorage (хранилище)
