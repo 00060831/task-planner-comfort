@@ -1,122 +1,80 @@
-# Task Planner Comfort
+# Task Planner for Lazy Creative Researchers 🚀
 
-Repository for planning and validating the MVP UX of a comfort-first task planner for creative users.
+Минималистичный comfort-first планер задач для творческих пользователей, которым важны скорость, фокус и низкое трение.
 
-MVP phase has moved to **UX validation for a "Lazy Creative Researcher"**: a user who wants speed, beauty, and zero friction.
+## Быстрый старт
 
-## 🧪 Test Goal
+```bash
+git clone https://github.com/00060831/task-planner-comfort
+cd task-planner-comfort
+npm install
+# опционально: cp .env.example .env.local
+npm run dev
+```
 
-Validate that the product is understandable and usable **without reading instructions**, especially on mobile.
+Откройте http://localhost:3000
 
-## ✅ UX Test Scenarios (MVP)
+## Как использовать
 
-1. **Quick idea capture**
-   - Action: `Cmd/Ctrl + K` → type `Прочитать статью про OAuth` → `Enter`
-   - Pass: task appears in **Today** or default **Someday** in < 5s total
+**Добавить задачу:**
+- Нажмите Cmd+K (Mac) или Ctrl+K (Windows)
+- Введите задачу и нажмите Enter
+- Или используйте плавающую кнопку `+ Add Task`
 
-2. **Smart priority parsing**
-   - Input: `🔴 Fix bug in auth @сегодня`
-   - Pass:
-     - priority = red/urgent
-     - date = Today
-     - title = `Fix bug in auth`
+**Smart parsing:**
+- `🔴 Срочно @сегодня #work` → высокий приоритет, Today, тег
+- `Презентация в пятницу #team` → задача на ближайшую пятницу
 
-3. **Brain Dump mode**
-   - Add 5 ideas in sequence:
-     - `Написать blog post`
-     - `Исследовать нейросети`
-     - `Купить кофе`
-     - `Переговоры с клиентом`
-     - `Финализировать дизайн`
-   - Pass: all are captured quickly without forced extra fields
+**Three Views:**
+- Today
+- Tomorrow
+- Someday
 
-4. **Focus Mode**
-   - Open focus view for one task (example: `Написать blog post`)
-   - Pass:
-     - `Готово` completes and moves to next task
-     - `Отложить на 1 час` hides/defers task
-     - `Это не срочно` moves task to Someday
+**Focus Mode:**
+- `Готово` → завершает задачу
+- `Отложить` → скрывает на 1 час
+- `Не срочно` → переносит в Someday
 
-5. **Context switching**
-   - Switch from Project A to Project B and back
-   - Pass: task list filters by current project context and restores quickly
+**Brain Dump:**
+- Быстро добавляйте идеи в отдельный блок
 
-6. **Mobile swipes**
-   - On mobile:
-     - swipe left = done
-     - swipe right = defer
-   - Pass: interactions are smooth, no visible lag
+**Тема и экспорт:**
+- Переключатель `🌙 Dark / ☀️ Light`
+- `Export JSON` для выгрузки локальных данных
 
-7. **Three-view clarity**
-   - First launch must show:
-     - Today
-     - Tomorrow
-     - Someday
-   - Pass: user instantly understands where tasks belong
+## Тестирование
 
-8. **Zen reminders**
-   - Task with due `Today 18:00`
-   - Pass: gentle in-app highlight only (no intrusive push/sound)
+1. Добавьте несколько задач через Cmd/Ctrl + K
+2. Переключайте Today/Tomorrow/Someday
+3. Проверьте все действия в Focus Mode
+4. Добавьте 3-5 идей в Brain Dump
+5. Обновите страницу — данные должны сохраниться
 
-9. **Archive & search**
-   - Search for June task with keyword `OAuth`
-   - Pass: item can be found in archive quickly and reliably
+Технические проверки:
 
-10. **Recurring tasks**
-    - Input: `Встреча в пятницу каждую неделю`
-    - Pass: recurring weekly task is created automatically
+```bash
+npm run lint
+npm run build
+```
 
-## 🎨 UX Checklist
+## UX validation scenarios (MVP)
 
-- [ ] One-click add works (`Cmd/Ctrl + K`, `Enter`)
-- [ ] Interface is not cluttered (clear whitespace)
-- [ ] Priority colors are intuitive (🔴 🟠 🟢 🔵)
-- [ ] Animations are helpful and non-distracting
-- [ ] Dark theme is comfortable
-- [ ] Mobile interactions are fast (swipe/actions)
-- [ ] No instructions needed to get started (**most important**)
-- [ ] Only essential fields are required (title first)
-- [ ] Tab transitions are smooth
-- [ ] Archive is out of the way but searchable
+1. Quick idea capture (< 5s)
+2. Smart priority/date parsing
+3. Brain Dump for 5 quick ideas
+4. Focus Mode actions (done/defer/not urgent)
+5. Three-view clarity on first launch
+6. Comfort on dark theme and mobile usage
 
-## 📊 Success Metrics
+## Seed data
 
-1. **Time to First Task**: < 5 seconds
-2. **Mandatory fields**: exactly 1 (title)
-3. **User delight**: user prefers it over Notes/Todo apps
-4. **No friction**: no "where to click / what does this mean"
-5. **Mobile advantage**: key flows as fast or faster than desktop
-6. **Focus success**: user can stay on one task with minimal context noise
+При первом открытии автоматически создаются демо-задачи и идеи для быстрого теста интерфейса.
 
-## 🔧 Post-Test Feedback Loop
+## Tech Stack
 
-For each failed or painful step, capture:
-
-- Scenario ID (1-10)
-- Device (mobile/desktop + browser)
-- User quote (what felt annoying)
-- Expected vs actual behavior
-- Severity (P0/P1/P2)
-- Proposed fix
-
-Decision rule for prioritization (assigned by product + design + engineering triad):
-
-- **P0**: blocks core flow (cannot add/find/complete task) or breaks Scenario 1/4/6 on mobile
-- **P1**: flow works but has clear friction, confusion, or noticeable lag
-- **P2**: polish issues that do not block task completion
-
-Then execute in this order:
-
-1. remove friction in primary flows
-2. improve mobile gestures/performance
-3. add missing smart parsing features
-4. tune UI polish and motion
-5. optimize startup/runtime performance to perceived < 1s open
-
-## 📌 MVP+ Features to Evaluate Next
-
-- Offline-first behavior
-- Cross-device sync
-- Complete keyboard shortcut coverage
-- Dark/light theme toggle
-- Export structured tasks to Jira
+- Next.js 15
+- React 18
+- TypeScript
+- Tailwind CSS
+- Framer Motion
+- localStorage
