@@ -183,7 +183,7 @@ export function TaskPlannerProvider({ children }: { children: React.ReactNode })
     setTasks((current) => [
       {
         id: createId(),
-        title: parsed.title,
+        title: parsed.title || "Новая идея",
         bucket: parsed.bucket,
         priority: parsed.priority,
         tags: parsed.tags,
@@ -244,8 +244,6 @@ export function TaskPlannerProvider({ children }: { children: React.ReactNode })
               ...task,
               archived: false,
               completedAt: undefined,
-              bucket: "someday",
-              scheduledFor: undefined,
               snoozedUntil: undefined,
             }
           : task,
@@ -284,7 +282,7 @@ export function TaskPlannerProvider({ children }: { children: React.ReactNode })
 
         return {
           id: createId(),
-          title: parsed.title,
+          title: parsed.title || "Новая идея",
           bucket: parsed.bucket,
           priority: parsed.priority,
           tags: parsed.tags,

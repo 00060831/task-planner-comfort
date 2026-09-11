@@ -55,6 +55,7 @@ export function FocusMode({
         </button>
         <button
           type="button"
+          aria-label="Перенести задачу в Someday"
           onClick={() => onSomeday(task.id)}
           className="flex items-center justify-center gap-2 rounded-3xl border border-white/10 px-4 py-4 text-base text-slate-100 transition hover:bg-white/5"
         >

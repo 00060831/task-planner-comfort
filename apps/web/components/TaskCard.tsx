@@ -152,6 +152,7 @@ export function TaskCard({
             </button>
             <button
               type="button"
+              aria-label="Перенести задачу в Someday"
               onClick={() => onSomeday?.(task.id)}
               className="rounded-full border border-white/10 px-3 py-2 text-sm text-slate-200 transition hover:bg-white/5"
             >

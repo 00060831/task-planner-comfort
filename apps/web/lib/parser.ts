@@ -157,7 +157,7 @@ export function parseTaskInput(input: string): ParsedTaskInput {
   }
 
   const tags = [...new Set([...raw.matchAll(/#([\p{L}\p{N}-]+)/gu)].map((match) => match[1].toLowerCase()))];
-  const title = removeSmartTokens(raw) || "Новая идея";
+  const title = removeSmartTokens(raw);
 
   return {
     title,
