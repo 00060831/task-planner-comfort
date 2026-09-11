@@ -7,11 +7,10 @@
 
 ## Быстрый запуск в Codespaces
 
-После создания Codespace `postStartCommand` автоматически запускает:
+После создания Codespace:
 
-```bash
-npm install && npm run dev
-```
+- `postCreateCommand` выполняет `npm ci`
+- `postStartCommand` поднимает `npm run dev` в фоне (с PID-проверкой от дублей)
 
 Приложение открывается на forwarded port **3000**.
 
