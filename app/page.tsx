@@ -11,11 +11,13 @@ import { loadTheme, saveTheme } from '@/lib/storage';
 import { Task, TaskView } from '@/lib/types';
 import { useEffect, useMemo, useState } from 'react';
 
+const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME ?? 'Task Planner for Lazy Creative Researchers';
+
 export default function HomePage() {
   const [activeView, setActiveView] = useState<TaskView>('today');
   const [focusMode, setFocusMode] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
-  const { isReady, tasksByView, data, addTask, updateTask, completeTask, snoozeTask, markNotUrgent, addBrainDump, exportJson } =
+  const { isReady, tasksByView, data, addTask, patchTask, completeTask, snoozeTask, markNotUrgent, addBrainDump, exportJson } =
     useTasks();
 
   useEffect(() => {
@@ -29,7 +31,10 @@ export default function HomePage() {
   }, [theme]);
 
   const activeTasks = tasksByView[activeView];
-  const focusTask: Task | null = useMemo(() => activeTasks[0] ?? null, [activeTasks]);
+  const focusTask: Task | null = useMemo(
+    () => activeTasks[0] ?? tasksByView.today[0] ?? tasksByView.tomorrow[0] ?? tasksByView.someday[0] ?? null,
+    [activeTasks, tasksByView],
+  );
 
   const onExport = () => {
     const payload = exportJson();
@@ -52,7 +57,7 @@ export default function HomePage() {
         <header className="rounded-2xl border border-slate-200 bg-white/70 p-4 backdrop-blur dark:border-slate-700 dark:bg-slate-900/60">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h1 className="text-xl font-semibold">Task Planner for Lazy Creative Researchers</h1>
+              <h1 className="text-xl font-semibold">{APP_NAME}</h1>
               <p className="text-sm text-slate-500 dark:text-slate-400">Comfort-first planning with low-friction task capture.</p>
             </div>
             <div className="flex items-center gap-2">
@@ -75,9 +80,7 @@ export default function HomePage() {
 
         <TaskList
           tasks={activeTasks}
-          onUpdate={(id, next) => {
-            updateTask(id, (task) => ({ ...task, ...next }));
-          }}
+          onUpdate={patchTask}
         />
 
         <BrainDump items={data.brainDump} onAdd={addBrainDump} />

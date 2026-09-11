@@ -12,8 +12,14 @@ const WEEKDAYS: Record<string, number> = {
   суббота: 6,
   воскресенье: 0,
 };
+const WEEKDAY_PATTERN = Object.keys(WEEKDAYS).join('|');
 
-const dateString = (date: Date) => date.toISOString().slice(0, 10);
+const dateString = (date: Date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
 
 const addDays = (date: Date, days: number) => {
   const copy = new Date(date);
@@ -65,17 +71,29 @@ const parsePriority = (text: string): TaskPriority => {
 
 const parseSchedule = (text: string) => {
   const lowered = text.toLowerCase();
+  const hasWord = (word: string) => new RegExp(`(^|\\s|[.,!?])${word}($|\\s|[.,!?])`, 'i').test(lowered);
+  const explicitWeekday = lowered.match(
+    new RegExp(`(^|\\s|[.,!?])в\\s+(${WEEKDAY_PATTERN})(?=$|\\s|[.,!?])`, 'i'),
+  );
 
-  if (lowered.includes('@сегодня') || lowered.includes('сегодня')) {
+  if (lowered.includes('@сегодня') || hasWord('сегодня')) {
     return dateString(new Date());
   }
 
-  if (lowered.includes('@завтра') || lowered.includes('завтра')) {
+  if (lowered.includes('@завтра') || hasWord('завтра')) {
     return dateString(addDays(new Date(), 1));
   }
 
+  if (explicitWeekday) {
+    const weekday = explicitWeekday[2];
+    const weekdayIndex = WEEKDAYS[weekday];
+    if (weekdayIndex !== undefined) {
+      return dateString(nextWeekday(weekdayIndex));
+    }
+  }
+
   for (const [day, dayIndex] of Object.entries(WEEKDAYS)) {
-    if (lowered.includes(day)) {
+    if (hasWord(day)) {
       return dateString(nextWeekday(dayIndex));
     }
   }
@@ -85,6 +103,14 @@ const parseSchedule = (text: string) => {
 
 const normalizeTitle = (text: string) =>
   text
+    .replace(
+      /(^|\s|[.,!?])в\s+(понедельник|вторник|среда|среду|четверг|пятница|пятницу|суббота|субботу|воскресенье)(?=$|\s|[.,!?])/gi,
+      ' ',
+    )
+    .replace(
+      /(^|\s|[.,!?])(сегодня|завтра|понедельник|вторник|среда|среду|четверг|пятница|пятницу|суббота|субботу|воскресенье)($|\s|[.,!?])/gi,
+      ' ',
+    )
     .replace(/#[^\s#@]+/g, '')
     .replace(/@сегодня|@завтра/gi, '')
     .replace(/[🔴🟡🟢]/g, '')

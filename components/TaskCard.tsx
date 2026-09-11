@@ -19,6 +19,27 @@ export function TaskCard({ task, onUpdate }: TaskCardProps) {
   const [expanded, setExpanded] = useState(false);
 
   const tagsValue = task.tags.join(', ');
+  const toDateString = (value: Date) => {
+    const year = value.getFullYear();
+    const month = String(value.getMonth() + 1).padStart(2, '0');
+    const day = String(value.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+  const today = toDateString(new Date());
+  const tomorrow = toDateString(new Date(Date.now() + 24 * 60 * 60 * 1000));
+
+  const toViewFromDate = (date: string | null): TaskView => {
+    if (!date) {
+      return 'someday';
+    }
+    if (date === today) {
+      return 'today';
+    }
+    if (date === tomorrow) {
+      return 'tomorrow';
+    }
+    return 'someday';
+  };
 
   return (
     <motion.article
@@ -64,7 +85,11 @@ export function TaskCard({ task, onUpdate }: TaskCardProps) {
             View
             <select
               value={task.view}
-              onChange={(event) => onUpdate(task.id, { view: event.target.value as TaskView })}
+              onChange={(event) => {
+                const view = event.target.value as TaskView;
+                const scheduledFor = view === 'today' ? today : view === 'tomorrow' ? tomorrow : null;
+                onUpdate(task.id, { view, scheduledFor });
+              }}
               className="rounded-lg border border-slate-700 bg-slate-950 px-2 py-2 text-white"
             >
               <option value="today">Today</option>
@@ -78,7 +103,10 @@ export function TaskCard({ task, onUpdate }: TaskCardProps) {
             <input
               type="date"
               value={task.scheduledFor ?? ''}
-              onChange={(event) => onUpdate(task.id, { scheduledFor: event.target.value || null })}
+              onChange={(event) => {
+                const scheduledFor = event.target.value || null;
+                onUpdate(task.id, { scheduledFor, view: toViewFromDate(scheduledFor) });
+              }}
               className="rounded-lg border border-slate-700 bg-slate-950 px-2 py-2 text-white"
             />
           </label>

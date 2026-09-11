@@ -10,6 +10,7 @@
 git clone https://github.com/00060831/task-planner-comfort
 cd task-planner-comfort
 npm install
+# опционально: cp .env.example .env.local
 npm run dev
 ```
 

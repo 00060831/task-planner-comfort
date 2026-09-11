@@ -20,6 +20,9 @@ export function FocusMode({ task, isOpen, onClose, onDone, onSnooze, onNotUrgent
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="focus-mode-title"
           className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/95 p-4"
         >
           <motion.div
@@ -28,6 +31,9 @@ export function FocusMode({ task, isOpen, onClose, onDone, onSnooze, onNotUrgent
             exit={{ scale: 0.95, opacity: 0 }}
             className="w-full max-w-xl rounded-3xl border border-violet-700/50 bg-slate-900 p-6 text-center shadow-glow"
           >
+            <h2 id="focus-mode-title" className="sr-only">
+              Focus Mode
+            </h2>
             <p className="mb-2 text-xs uppercase tracking-[0.2em] text-violet-300">Focus Mode</p>
             {task ? (
               <>

@@ -3,19 +3,29 @@
 import { useMemo, useState, useEffect } from 'react';
 import { parseTaskInput } from '@/lib/parser';
 import { loadAppData, saveAppData } from '@/lib/storage';
-import { AppData, BrainDumpItem, Task, TaskPriority, TaskView } from '@/lib/types';
+import { AppData, BrainDumpItem, Task } from '@/lib/types';
 
 const nowIso = () => new Date().toISOString();
+const makeId = () =>
+  typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+    ? crypto.randomUUID()
+    : `id-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
-const makeTask = (title: string, view: TaskView, priority: TaskPriority, scheduledFor: string | null): Task => {
+const makeSeedTask = (
+  id: string,
+  raw: string,
+  overrides: Partial<Pick<Task, 'view' | 'priority' | 'scheduledFor'>> = {},
+): Task => {
+  const parsed = parseTaskInput(raw);
   const createdAt = nowIso();
+
   return {
-    id: crypto.randomUUID(),
-    title,
-    view,
-    priority,
-    scheduledFor,
-    tags: [],
+    id,
+    title: parsed.title,
+    view: overrides.view ?? parsed.view,
+    priority: overrides.priority ?? parsed.priority,
+    scheduledFor: overrides.scheduledFor ?? parsed.scheduledFor,
+    tags: parsed.tags,
     done: false,
     snoozedUntil: null,
     createdAt,
@@ -25,13 +35,17 @@ const makeTask = (title: string, view: TaskView, priority: TaskPriority, schedul
 
 const seedData = (): AppData => ({
   tasks: [
-    makeTask('🔴 Подготовить вопросы для интервью @сегодня #research', 'today', 'high', new Date().toISOString().slice(0, 10)),
-    makeTask('Прочитать статью про AI завтра #learning', 'tomorrow', 'medium', new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10)),
-    makeTask('Собрать идеи для будущего проекта #creative', 'someday', 'low', null),
+    makeSeedTask('seed-task-1', '🔴 Подготовить вопросы для интервью @сегодня #research'),
+    makeSeedTask('seed-task-2', 'Прочитать статью про AI завтра #learning'),
+    makeSeedTask('seed-task-3', 'Собрать идеи для будущего проекта #creative', {
+      view: 'someday',
+      priority: 'low',
+      scheduledFor: null,
+    }),
   ],
   brainDump: [
-    { id: crypto.randomUUID(), text: 'Идея: мини-курс по заметкам', createdAt: nowIso() },
-    { id: crypto.randomUUID(), text: 'Проверить гипотезу о micro-learning', createdAt: nowIso() },
+    { id: 'seed-idea-1', text: 'Идея: мини-курс по заметкам', createdAt: nowIso() },
+    { id: 'seed-idea-2', text: 'Проверить гипотезу о micro-learning', createdAt: nowIso() },
   ],
 });
 
@@ -78,7 +92,7 @@ export const useTasks = () => {
     const parsed = parseTaskInput(trimmed);
     const createdAt = nowIso();
     const task: Task = {
-      id: crypto.randomUUID(),
+      id: makeId(),
       title: parsed.title,
       priority: parsed.priority,
       view: parsed.view,
@@ -104,6 +118,9 @@ export const useTasks = () => {
       }),
     }));
   };
+  const patchTask = (id: string, patch: Partial<Task>) => {
+    updateTask(id, (task) => ({ ...task, ...patch }));
+  };
 
   const completeTask = (id: string) => updateTask(id, (task) => ({ ...task, done: true }));
 
@@ -122,7 +139,7 @@ export const useTasks = () => {
       return;
     }
 
-    const item: BrainDumpItem = { id: crypto.randomUUID(), text: value, createdAt: nowIso() };
+    const item: BrainDumpItem = { id: makeId(), text: value, createdAt: nowIso() };
     setData((current) => ({ ...current, brainDump: [item, ...current.brainDump] }));
   };
 
@@ -145,6 +162,7 @@ export const useTasks = () => {
     tasksByView,
     addTask,
     updateTask,
+    patchTask,
     completeTask,
     snoozeTask,
     markNotUrgent,
