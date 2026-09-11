@@ -1,122 +1,61 @@
 # Task Planner Comfort
 
-Repository for planning and validating the MVP UX of a comfort-first task planner for creative users.
+Минималистичный планер задач для ленивого творческого исследователя: быстро закинуть мысль, выбрать один фокус и не утонуть в сложной системе.
 
-MVP phase has moved to **UX validation for a "Lazy Creative Researcher"**: a user who wants speed, beauty, and zero friction.
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/00060831/task-planner-comfort)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/00060831/task-planner-comfort)
 
-## 🧪 Test Goal
+## Что внутри
 
-Validate that the product is understandable and usable **without reading instructions**, especially on mobile.
+- **Quick add** — одна строка для добавления задач
+- **Today / Tomorrow / Someday** — мягкая сортировка без жёсткого календаря
+- **Focus mode** — приложение подсказывает следующую задачу
+- **localStorage** — демо работает без сервера и базы данных
+- **Codespaces-ready** — можно открыть и запустить прямо в браузере
 
-## ✅ UX Test Scenarios (MVP)
+## Открыть прямо на GitHub
 
-1. **Quick idea capture**
-   - Action: `Cmd/Ctrl + K` → type `Прочитать статью про OAuth` → `Enter`
-   - Pass: task appears in **Today** or default **Someday** in < 5s total
+### Вариант 1 — GitHub Codespaces
 
-2. **Smart priority parsing**
-   - Input: `🔴 Fix bug in auth @сегодня`
-   - Pass:
-     - priority = red/urgent
-     - date = Today
-     - title = `Fix bug in auth`
+1. Нажми кнопку **Open in GitHub Codespaces** выше.
+2. Дождись создания codespace.
+3. В терминале выполни:
 
-3. **Brain Dump mode**
-   - Add 5 ideas in sequence:
-     - `Написать blog post`
-     - `Исследовать нейросети`
-     - `Купить кофе`
-     - `Переговоры с клиентом`
-     - `Финализировать дизайн`
-   - Pass: all are captured quickly without forced extra fields
+```bash
+npm run dev
+```
 
-4. **Focus Mode**
-   - Open focus view for one task (example: `Написать blog post`)
-   - Pass:
-     - `Готово` completes and moves to next task
-     - `Отложить на 1 час` hides/defers task
-     - `Это не срочно` moves task to Someday
+4. GitHub автоматически откроет preview для порта **3000**.
+5. Готово: приложение работает прямо в браузере.
 
-5. **Context switching**
-   - Switch from Project A to Project B and back
-   - Pass: task list filters by current project context and restores quickly
+`npm install` отдельно не нужен: `.devcontainer/devcontainer.json` делает это автоматически при первом запуске.
 
-6. **Mobile swipes**
-   - On mobile:
-     - swipe left = done
-     - swipe right = defer
-   - Pass: interactions are smooth, no visible lag
+### Вариант 2 — локально
 
-7. **Three-view clarity**
-   - First launch must show:
-     - Today
-     - Tomorrow
-     - Someday
-   - Pass: user instantly understands where tasks belong
+```bash
+npm install
+npm run dev
+```
 
-8. **Zen reminders**
-   - Task with due `Today 18:00`
-   - Pass: gentle in-app highlight only (no intrusive push/sound)
+Открой [http://localhost:3000](http://localhost:3000).
 
-9. **Archive & search**
-   - Search for June task with keyword `OAuth`
-   - Pass: item can be found in archive quickly and reliably
+## Быстрый сценарий тестирования
 
-10. **Recurring tasks**
-    - Input: `Встреча в пятницу каждую неделю`
-    - Pass: recurring weekly task is created automatically
+1. Добавь задачу в поле сверху.
+2. Попробуй префиксы `сегодня:`, `завтра:` или `потом:`.
+3. Отметь задачу выполненной.
+4. Нажми **Переложить**, чтобы переместить её между колонками.
+5. Проверь карточку **Focus mode** — она показывает следующий приоритет.
 
-## 🎨 UX Checklist
+## Деплой
 
-- [ ] One-click add works (`Cmd/Ctrl + K`, `Enter`)
-- [ ] Interface is not cluttered (clear whitespace)
-- [ ] Priority colors are intuitive (🔴 🟠 🟢 🔵)
-- [ ] Animations are helpful and non-distracting
-- [ ] Dark theme is comfortable
-- [ ] Mobile interactions are fast (swipe/actions)
-- [ ] No instructions needed to get started (**most important**)
-- [ ] Only essential fields are required (title first)
-- [ ] Tab transitions are smooth
-- [ ] Archive is out of the way but searchable
+### Vercel
 
-## 📊 Success Metrics
+Нажми кнопку **Deploy with Vercel** выше и подключи репозиторий. Для этого проекта не нужен отдельный backend, поэтому деплой проходит как обычное Next.js приложение.
 
-1. **Time to First Task**: < 5 seconds
-2. **Mandatory fields**: exactly 1 (title)
-3. **User delight**: user prefers it over Notes/Todo apps
-4. **No friction**: no "where to click / what does this mean"
-5. **Mobile advantage**: key flows as fast or faster than desktop
-6. **Focus success**: user can stay on one task with minimal context noise
+## Стек
 
-## 🔧 Post-Test Feedback Loop
-
-For each failed or painful step, capture:
-
-- Scenario ID (1-10)
-- Device (mobile/desktop + browser)
-- User quote (what felt annoying)
-- Expected vs actual behavior
-- Severity (P0/P1/P2)
-- Proposed fix
-
-Decision rule for prioritization (assigned by product + design + engineering triad):
-
-- **P0**: blocks core flow (cannot add/find/complete task) or breaks Scenario 1/4/6 on mobile
-- **P1**: flow works but has clear friction, confusion, or noticeable lag
-- **P2**: polish issues that do not block task completion
-
-Then execute in this order:
-
-1. remove friction in primary flows
-2. improve mobile gestures/performance
-3. add missing smart parsing features
-4. tune UI polish and motion
-5. optimize startup/runtime performance to perceived < 1s open
-
-## 📌 MVP+ Features to Evaluate Next
-
-- Offline-first behavior
-- Cross-device sync
-- Complete keyboard shortcut coverage
-- Dark/light theme toggle
-- Export structured tasks to Jira
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
