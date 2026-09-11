@@ -40,6 +40,10 @@ export function TaskCard({
 }: TaskCardProps) {
   const startX = useRef<number | null>(null);
 
+  const isInteractiveTarget = (target: EventTarget | null) =>
+    target instanceof HTMLElement &&
+    Boolean(target.closest("button, a, input, textarea, select"));
+
   const handleSwipeEnd = (endX: number) => {
     if (startX.current === null) {
       return;
@@ -65,6 +69,11 @@ export function TaskCard({
       animate={{ opacity: 1, y: 0 }}
       className="rounded-[28px] border border-white/10 bg-[var(--card)] p-4 shadow-lg shadow-slate-950/25 backdrop-blur"
       onPointerDown={(event) => {
+        if (isInteractiveTarget(event.target)) {
+          startX.current = null;
+          return;
+        }
+
         startX.current = event.clientX;
       }}
       onPointerUp={(event) => {
