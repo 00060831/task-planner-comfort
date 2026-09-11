@@ -44,6 +44,18 @@ const weekdayPatterns = [
   { weekday: 0, label: "воскресенье", tokens: ["воскресенье", "sunday"] },
 ];
 
+const wordStart = String.raw`(?<![\p{L}\p{N}_-])`;
+const wordEnd = String.raw`(?![\p{L}\p{N}_-])`;
+const standaloneStart = String.raw`(?<![\p{L}\p{N}_@#-])`;
+
+function wholeToken(pattern: string) {
+  return `${wordStart}(?:${pattern})${wordEnd}`;
+}
+
+function standaloneToken(pattern: string) {
+  return `${standaloneStart}(?:${pattern})${wordEnd}`;
+}
+
 function startOfDay(date: Date) {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 }
@@ -74,8 +86,8 @@ function nextWeekdayDate(weekday: number, includeToday: boolean) {
 function detectRecurring(value: string) {
   for (const pattern of weekdayPatterns) {
     const tokenPattern = pattern.tokens.join("|");
-    const weeklyMatcher = new RegExp(`\\b(?:каждый|каждую|every|weekly)\\s+(?:${tokenPattern})\\b`, "iu");
-    const contextualMatcher = new RegExp(`\\b(?:в|on)\\s+(?:${tokenPattern})\\b`, "iu");
+    const weeklyMatcher = new RegExp(wholeToken(`(?:каждый|каждую|every|weekly)\\s+(?:${tokenPattern})`), "iu");
+    const contextualMatcher = new RegExp(wholeToken(`(?:в|on)\\s+(?:${tokenPattern})`), "iu");
 
     if (weeklyMatcher.test(value)) {
       return {
@@ -105,11 +117,12 @@ function removeSmartTokens(value: string) {
   const weekdayTokens = weekdayPatterns
     .flatMap((pattern) => pattern.tokens)
     .join("|");
+  const scheduleTokens = "(?:сегодня|today|завтра|tomorrow|когда-нибудь|someday)";
 
   return value
     .replace(/[🔴🟠🟢]/gu, " ")
-    .replace(/@?(сегодня|today|завтра|tomorrow|когда-нибудь|someday)\b/giu, " ")
-    .replace(new RegExp(`\\b(?:каждый|каждую|every|weekly|в|on)\\s+(?:${weekdayTokens})\\b`, "giu"), " ")
+    .replace(new RegExp(`${wordStart}@${scheduleTokens}${wordEnd}|${standaloneToken(scheduleTokens)}`, "giu"), " ")
+    .replace(new RegExp(wholeToken(`(?:каждый|каждую|every|weekly|в|on)\\s+(?:${weekdayTokens})`), "giu"), " ")
     .replace(/#([\p{L}\p{N}-]+)/gu, " ")
     .replace(/\s+/g, " ")
     .trim();
@@ -126,18 +139,20 @@ export function parseTaskInput(input: string): ParsedTaskInput {
   let bucket: TaskBucket = "someday";
   let priority: TaskPriority = "important";
 
-  if (/[🔴]/u.test(raw) || /\b(срочно|urgent)\b/iu.test(raw)) {
+  if (/[🔴]/u.test(raw) || new RegExp(wholeToken("срочно|urgent"), "iu").test(raw)) {
     priority = "urgent";
-  } else if (/[🟢]/u.test(raw) || /\b(когда-нибудь|someday|later)\b/iu.test(raw)) {
+  } else if (/[🟢]/u.test(raw) || new RegExp(wholeToken("когда-нибудь|someday|later"), "iu").test(raw)) {
     priority = "gentle";
   }
 
   let scheduledFor: string | undefined;
+  const todayToken = `${wordStart}@(?!$)(?:сегодня|today)${wordEnd}|${standaloneToken("сегодня|today")}`;
+  const tomorrowToken = `${wordStart}@(?!$)(?:завтра|tomorrow)${wordEnd}|${standaloneToken("завтра|tomorrow")}`;
 
-  if (/@?(сегодня|today)\b/iu.test(raw)) {
+  if (new RegExp(todayToken, "iu").test(raw)) {
     bucket = "today";
     scheduledFor = dayOffset(0);
-  } else if (/@?(завтра|tomorrow)\b/iu.test(raw)) {
+  } else if (new RegExp(tomorrowToken, "iu").test(raw)) {
     bucket = "tomorrow";
     scheduledFor = dayOffset(1);
   }
