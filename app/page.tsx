@@ -33,8 +33,12 @@ const initialTasks: Task[] = seedTaskTemplates.map((task, index) => ({
   id: `seed-${index + 1}`,
 }));
 
+function createTaskId() {
+  return globalThis.crypto?.randomUUID?.() ?? `task-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
 function buildSeedTasks(): Task[] {
-  return seedTaskTemplates.map((task) => ({ ...task, id: crypto.randomUUID() }));
+  return seedTaskTemplates.map((task) => ({ ...task, id: createTaskId() }));
 }
 
 function isTask(value: unknown): value is Task {
@@ -151,7 +155,7 @@ export default function Home() {
     }
 
     setTasks((current) => [
-      { id: crypto.randomUUID(), title: parsed.title, lane: parsed.lane, done: false },
+      { id: createTaskId(), title: parsed.title, lane: parsed.lane, done: false },
       ...current,
     ]);
     setDraft("");
