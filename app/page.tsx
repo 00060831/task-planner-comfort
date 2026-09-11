@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 
 type Lane = "today" | "tomorrow" | "someday";
 
@@ -12,6 +12,7 @@ type Task = {
 };
 
 const STORAGE_KEY = "task-planner-comfort:data";
+const STORAGE_EVENT = "task-planner-comfort:storage-change";
 
 const laneOrder: Lane[] = ["today", "tomorrow", "someday"];
 
@@ -39,6 +40,50 @@ function createTaskId() {
 
 function buildSeedTasks(): Task[] {
   return seedTaskTemplates.map((task) => ({ ...task, id: createTaskId() }));
+}
+
+function readTasks(): Task[] {
+  if (typeof window === "undefined") {
+    return initialTasks;
+  }
+
+  const saved = window.localStorage.getItem(STORAGE_KEY);
+
+  if (!saved) {
+    return initialTasks;
+  }
+
+  try {
+    const parsed = JSON.parse(saved) as unknown;
+    return Array.isArray(parsed) && parsed.every(isTask) ? parsed : initialTasks;
+  } catch {
+    window.localStorage.removeItem(STORAGE_KEY);
+    return initialTasks;
+  }
+}
+
+function writeTasks(tasks: Task[]) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+  window.dispatchEvent(new Event(STORAGE_EVENT));
+}
+
+function subscribe(callback: () => void) {
+  if (typeof window === "undefined") {
+    return () => undefined;
+  }
+
+  const listener = () => callback();
+  window.addEventListener("storage", listener);
+  window.addEventListener(STORAGE_EVENT, listener);
+
+  return () => {
+    window.removeEventListener("storage", listener);
+    window.removeEventListener(STORAGE_EVENT, listener);
+  };
 }
 
 function isTask(value: unknown): value is Task {
@@ -82,40 +127,7 @@ function nextLane(current: Lane): Lane {
 export default function Home() {
   const [draft, setDraft] = useState("");
   const [lane, setLane] = useState<Lane>("today");
-  const [tasks, setTasks] = useState<Task[]>(initialTasks);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    const frame = window.requestAnimationFrame(() => {
-      const saved = window.localStorage.getItem(STORAGE_KEY);
-
-      if (!saved) {
-        setTasks(buildSeedTasks());
-        setMounted(true);
-        return;
-      }
-
-      try {
-        const parsed = JSON.parse(saved) as unknown;
-        setTasks(Array.isArray(parsed) && parsed.every(isTask) ? parsed : buildSeedTasks());
-      } catch {
-        window.localStorage.removeItem(STORAGE_KEY);
-        setTasks(buildSeedTasks());
-      }
-
-      setMounted(true);
-    });
-
-    return () => window.cancelAnimationFrame(frame);
-  }, []);
-
-  useEffect(() => {
-    if (!mounted) {
-      return;
-    }
-
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
-  }, [mounted, tasks]);
+  const tasks = useSyncExternalStore(subscribe, readTasks, () => initialTasks);
 
   const counts = useMemo(
     () => {
@@ -154,28 +166,24 @@ export default function Home() {
       return;
     }
 
-    setTasks((current) => [
+    writeTasks([
       { id: createTaskId(), title: parsed.title, lane: parsed.lane, done: false },
-      ...current,
+      ...tasks,
     ]);
     setDraft("");
     setLane(parsed.lane);
   }
 
   function toggleTask(id: string) {
-    setTasks((current) =>
-      current.map((task) => (task.id === id ? { ...task, done: !task.done } : task)),
-    );
+    writeTasks(tasks.map((task) => (task.id === id ? { ...task, done: !task.done } : task)));
   }
 
   function moveTask(id: string) {
-    setTasks((current) =>
-      current.map((task) => (task.id === id ? { ...task, lane: nextLane(task.lane) } : task)),
-    );
+    writeTasks(tasks.map((task) => (task.id === id ? { ...task, lane: nextLane(task.lane) } : task)));
   }
 
   function resetDemo() {
-    setTasks(buildSeedTasks());
+    writeTasks(buildSeedTasks());
     setDraft("");
     setLane("today");
   }
