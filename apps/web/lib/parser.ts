@@ -1,4 +1,4 @@
-import { ParsedTaskInput, RecurringRule, TaskBucket, TaskPriority } from "@/lib/types";
+import { ParsedTaskInput, TaskBucket, TaskPriority } from "@/lib/types";
 
 const stopWords = new Set([
   "about",
@@ -62,33 +62,43 @@ export function dayOffset(offset: number) {
   return formatLocalDay(today);
 }
 
-function nextWeekdayDate(weekday: number) {
+function nextWeekdayDate(weekday: number, includeToday: boolean) {
   const today = startOfDay(new Date());
   const current = today.getDay();
   const rawDistance = (weekday - current + 7) % 7;
-  const distance = rawDistance === 0 ? 7 : rawDistance;
+  const distance = rawDistance === 0 && !includeToday ? 7 : rawDistance;
   today.setDate(today.getDate() + distance);
   return formatLocalDay(today);
 }
 
-function detectRecurring(value: string): RecurringRule | undefined {
+function detectRecurring(value: string) {
   for (const pattern of weekdayPatterns) {
     const tokenPattern = pattern.tokens.join("|");
-    const recurringMatcher = new RegExp(
-      `\\b(?:каждый|каждую|every|weekly|в|on)\\s+(?:${tokenPattern})\\b`,
-      "iu",
-    );
+    const weeklyMatcher = new RegExp(`\\b(?:каждый|каждую|every|weekly)\\s+(?:${tokenPattern})\\b`, "iu");
+    const contextualMatcher = new RegExp(`\\b(?:в|on)\\s+(?:${tokenPattern})\\b`, "iu");
 
-    if (recurringMatcher.test(value)) {
+    if (weeklyMatcher.test(value)) {
       return {
-        cadence: "weekly",
-        weekday: pattern.weekday,
-        label: pattern.label,
+        immediate: false,
+        rule: {
+          cadence: "weekly" as const,
+          weekday: pattern.weekday,
+          label: pattern.label,
+        },
+      };
+    }
+
+    if (contextualMatcher.test(value)) {
+      return {
+        immediate: true,
+        rule: {
+          cadence: "weekly" as const,
+          weekday: pattern.weekday,
+          label: pattern.label,
+        },
       };
     }
   }
-
-  return undefined;
 }
 
 function removeSmartTokens(value: string) {
@@ -135,7 +145,7 @@ export function parseTaskInput(input: string): ParsedTaskInput {
   const recurring = detectRecurring(raw);
 
   if (!scheduledFor && recurring) {
-    scheduledFor = nextWeekdayDate(recurring.weekday);
+    scheduledFor = nextWeekdayDate(recurring.rule.weekday, recurring.immediate);
     const now = dayOffset(0);
     const tomorrow = dayOffset(1);
 
@@ -155,6 +165,6 @@ export function parseTaskInput(input: string): ParsedTaskInput {
     priority,
     tags,
     scheduledFor,
-    recurring,
+    recurring: recurring?.rule,
   };
 }
