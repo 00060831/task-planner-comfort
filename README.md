@@ -1,5 +1,7 @@
 # Task Planner Comfort
 
+Repository for planning and validating the MVP UX of a comfort-first task planner for creative users.
+
 MVP phase has moved to **UX validation for a "Lazy Creative Researcher"**: a user who wants speed, beauty, and zero friction.
 
 ## 🧪 Test Goal
@@ -24,7 +26,7 @@ Validate that the product is understandable and usable **without reading instruc
      - `Написать blog post`
      - `Исследовать нейросети`
      - `Купить кофе`
-     - `Переговор с клиентом`
+     - `Переговоры с клиентом`
      - `Финализировать дизайн`
    - Pass: all are captured quickly without forced extra fields
 
@@ -32,7 +34,7 @@ Validate that the product is understandable and usable **without reading instruc
    - Open focus view for one task (example: `Написать blog post`)
    - Pass:
      - `Готово` completes and moves to next task
-     - `Отложить на 1 час` hides/defer task
+     - `Отложить на 1 час` hides/defers task
      - `Это не срочно` moves task to Someday
 
 5. **Context switching**
