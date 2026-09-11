@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type Lane = "today" | "tomorrow" | "someday";
 
@@ -27,6 +27,11 @@ const seedTaskTemplates: Omit<Task, "id">[] = [
   { title: "Подготовить список идей на завтра", lane: "tomorrow", done: false },
   { title: "Запланировать ленивый творческий спринт", lane: "someday", done: false },
 ];
+
+const initialTasks: Task[] = seedTaskTemplates.map((task, index) => ({
+  ...task,
+  id: `seed-${index + 1}`,
+}));
 
 function buildSeedTasks(): Task[] {
   return seedTaskTemplates.map((task) => ({ ...task, id: crypto.randomUUID() }));
@@ -73,38 +78,40 @@ function nextLane(current: Lane): Lane {
 export default function Home() {
   const [draft, setDraft] = useState("");
   const [lane, setLane] = useState<Lane>("today");
-  const [tasks, setTasks] = useState<Task[]>(() => {
-    if (typeof window === "undefined") {
-      return [];
-    }
-
-    const saved = window.localStorage.getItem(STORAGE_KEY);
-
-    if (!saved) {
-      return buildSeedTasks();
-    }
-
-    try {
-      const parsed = JSON.parse(saved) as unknown;
-      return Array.isArray(parsed) && parsed.every(isTask) ? parsed : buildSeedTasks();
-    } catch {
-      window.localStorage.removeItem(STORAGE_KEY);
-      return buildSeedTasks();
-    }
-  });
-  const hydrated = useSyncExternalStore(
-    () => () => undefined,
-    () => true,
-    () => false,
-  );
+  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    if (!hydrated) {
+    const frame = window.requestAnimationFrame(() => {
+      const saved = window.localStorage.getItem(STORAGE_KEY);
+
+      if (!saved) {
+        setTasks(buildSeedTasks());
+        setMounted(true);
+        return;
+      }
+
+      try {
+        const parsed = JSON.parse(saved) as unknown;
+        setTasks(Array.isArray(parsed) && parsed.every(isTask) ? parsed : buildSeedTasks());
+      } catch {
+        window.localStorage.removeItem(STORAGE_KEY);
+        setTasks(buildSeedTasks());
+      }
+
+      setMounted(true);
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) {
       return;
     }
 
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
-  }, [hydrated, tasks]);
+  }, [mounted, tasks]);
 
   const counts = useMemo(
     () => {
@@ -167,10 +174,6 @@ export default function Home() {
     setTasks(buildSeedTasks());
     setDraft("");
     setLane("today");
-  }
-
-  if (!hydrated) {
-    return <main className="min-h-screen" />;
   }
 
   return (
@@ -318,7 +321,7 @@ export default function Home() {
                       key={task.id}
                       className={`rounded-3xl border p-4 transition ${
                         task.done
-                          ? "border-white/5 bg-slate-950/30 text-slate-500"
+                          ? "border-white/5 bg-slate-950/30 text-slate-300"
                           : "border-white/10 bg-white/5 text-slate-100"
                       }`}
                     >
