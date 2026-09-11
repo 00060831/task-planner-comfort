@@ -1,6 +1,4 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  agentRules: false,
-};
+const nextConfig = {};
 
 export default nextConfig;

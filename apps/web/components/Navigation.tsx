@@ -24,7 +24,7 @@ export function Navigation() {
   const pathname = usePathname();
 
   return (
-    <nav className="sticky bottom-4 z-20 mt-6">
+    <nav aria-label="Основная навигация планера" className="sticky bottom-4 z-20 mt-6">
       <div className="mx-auto flex w-full max-w-md items-center justify-between gap-2 rounded-full border border-white/10 bg-slate-900/85 p-2 shadow-2xl shadow-slate-950/60 backdrop-blur">
         {items.map(({ href, label, icon: Icon }) => {
           const active = pathname === href;

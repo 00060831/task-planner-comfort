@@ -244,6 +244,8 @@ export function TaskPlannerProvider({ children }: { children: React.ReactNode })
               ...task,
               archived: false,
               completedAt: undefined,
+              bucket: "someday",
+              scheduledFor: undefined,
               snoozedUntil: undefined,
             }
           : task,

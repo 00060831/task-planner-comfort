@@ -60,6 +60,7 @@ export function TaskCard({
 
   return (
     <motion.article
+      aria-describedby={archived ? undefined : `task-card-help-${task.id}`}
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       className="rounded-[28px] border border-white/10 bg-[var(--card)] p-4 shadow-lg shadow-slate-950/25 backdrop-blur"
@@ -100,6 +101,11 @@ export function TaskCard({
           ) : null}
           {task.snoozedUntil ? (
             <p className="text-xs text-slate-500">Спит до {new Date(task.snoozedUntil).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}</p>
+          ) : null}
+          {!archived ? (
+            <p id={`task-card-help-${task.id}`} className="sr-only">
+              Используй кнопки ниже для действий. На сенсорных экранах также доступны свайпы: влево — готово, вправо — отложить на час.
+            </p>
           ) : null}
         </div>
       </div>
